@@ -5,7 +5,7 @@ package academy.javapro;
  * Features overdraft protection and transaction fees.
  */
 public class CheckingAccount extends Account {
-    private final double overdraftLimit;
+    private double overdraftLimit;
     private static final double TRANSACTION_FEE = 1.5; // Fee per withdrawal
 
     /**
@@ -27,7 +27,7 @@ public class CheckingAccount extends Account {
      * @return The overdraft limit
      */
     public double getOverdraftLimit() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return this.overdraftLimit;
     }
 
     /**
@@ -36,7 +36,7 @@ public class CheckingAccount extends Account {
      * @param overdraftLimit The new overdraft limit
      */
     public void setOverdraftLimit(double overdraftLimit) {
-        throw new UnsupportedOperationException("Method not implemented");
+        this.overdraftLimit = overdraftLimit;
     }
 
     /**
@@ -45,7 +45,29 @@ public class CheckingAccount extends Account {
      */
     @Override
     public void withdraw(double amount) {
-        throw new UnsupportedOperationException("Method not implemented");
+        double currentBalance = getBalance();
+
+        if (amount <= 0) {
+            System.out.println("Withdrawal amount must be positive.");
+            return;
+        }
+
+        if (amount > (currentBalance + overdraftLimit)) {
+            System.out.println("Cannot withdraw $" + String.format("%.2f", amount) + ". Exceeds overdraft limit.");
+            return;
+        }
+
+        // Deduct the withdrawal amount
+        double newBalance = currentBalance - amount - TRANSACTION_FEE;
+        setBalance(newBalance);
+
+        // Log the withdrawal with the correct final balance
+        logTransaction("WITHDRAWAL", amount);
+        logTransaction("FEE", TRANSACTION_FEE);
+
+        if (getBalance() < 0) {
+            System.out.printf("Account is in overdraft. Current balance: $%.2f\n", getBalance());
+        }
     }
 
     /**

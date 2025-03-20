@@ -27,14 +27,17 @@ public class SavingsAccount extends Account {
      * @return The calculated interest amount
      */
     public double calculateInterest() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return getBalance() * (interestRate / 100.0);
     }
 
     /**
      * Applies the calculated interest to the account balance.
      */
     public void applyInterest() {
-        throw new UnsupportedOperationException("Method not implemented");
+        double interest = calculateInterest();
+        setBalance(getBalance() + interest);
+        logTransaction("INTEREST", interest);
+        System.out.printf("Interest applied: $%.2f\n", interest);
     }
 
     /**
@@ -43,7 +46,23 @@ public class SavingsAccount extends Account {
      */
     @Override
     public void withdraw(double amount) {
-        throw new UnsupportedOperationException("Method not implemented");
+        double currentBalance = getBalance();
+
+        if (amount <= 0) {
+            System.out.println("Withdrawal amount must be positive.");
+            return;
+        }
+
+        // Check if withdrawing keeps us above MIN_BALANCE
+        if ((currentBalance - amount) < MIN_BALANCE) {
+            System.out.println("Cannot withdraw $" + String.format("%.2f", amount) +
+                    ". Minimum balance of $" + String.format("%.2f", MIN_BALANCE) + " must be maintained.");
+            return;
+        }
+
+        // Proceed with withdrawal
+        setBalance(currentBalance - amount);
+        logTransaction("WITHDRAWAL", amount);
     }
 
     /**
